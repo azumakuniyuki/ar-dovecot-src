@@ -1,0 +1,16 @@
+---
+#      _                          _    __          __     ___            _        
+#   __| | _____   _____  ___ ___ | |_ / /__ _ __ __\ \   / / |_ __ _ ___| | _____ 
+#  / _` |/ _ \ \ / / _ \/ __/ _ \| __| / __| '__/ __| | / /| __/ _` / __| |/ / __|
+# | (_| | (_) \ V /  __/ (_| (_) | |_| \__ \ | | (__| |/ / | || (_| \__ \   <\__ \
+#  \__,_|\___/ \_/ \___|\___\___/ \__| |___/_|  \___| /_/   \__\__,_|___/_|\_\___/
+#                                     \_\          /_/                            
+# tasks file for ar-dovecot-src
+- { include: install-pkg.yml, when: dovecot.updateonly == false }
+- { include: create-user.yml, when: dovecot.updateonly == false }
+- { include: get-archive.yml }
+- { include: compile-src.yml }
+- { include: make-config.yml, when: dovecot.updateonly == false }
+- { include: boot-script.yml }
+- { include: port-config.yml }
+

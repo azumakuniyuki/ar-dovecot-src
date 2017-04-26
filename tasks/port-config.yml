@@ -1,0 +1,16 @@
+---
+#      _                          _    __          __     ___            _        
+#   __| | _____   _____  ___ ___ | |_ / /__ _ __ __\ \   / / |_ __ _ ___| | _____ 
+#  / _` |/ _ \ \ / / _ \/ __/ _ \| __| / __| '__/ __| | / /| __/ _` / __| |/ / __|
+# | (_| | (_) \ V /  __/ (_| (_) | |_| \__ \ | | (__| |/ / | || (_| \__ \   <\__ \
+#  \__,_|\___/ \_/ \___|\___\___/ \__| |___/_|  \___| /_/   \__\__,_|___/_|\_\___/
+#                                     \_\          /_/                            
+# port-config
+- name: port-config | Each email related port should be opened
+  firewalld:
+    service:   "{{ item }}"
+    state:     "enabled"
+    immediate: true
+    permanent: true
+  with_items: ["pop3", "imap", "pop3s", "imaps"]
+

@@ -1,0 +1,87 @@
+---
+#      _                          _    __          __     ___            _        
+#   __| | _____   _____  ___ ___ | |_ / /__ _ __ __\ \   / / |_ __ _ ___| | _____ 
+#  / _` |/ _ \ \ / / _ \/ __/ _ \| __| / __| '__/ __| | / /| __/ _` / __| |/ / __|
+# | (_| | (_) \ V /  __/ (_| (_) | |_| \__ \ | | (__| |/ / | || (_| \__ \   <\__ \
+#  \__,_|\___/ \_/ \___|\___\___/ \__| |___/_|  \___| /_/   \__\__,_|___/_|\_\___/
+#                                     \_\          /_/                            
+# compile-src
+- name: compile-src | Patch file for pkgsysconfdir should be deployed
+  register: deploy_patch_for_sysconfdir
+  template:
+    src:  "tmp/dovecot-pkgsysconfdir.patch.j2"
+    dest: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}/pkgsysconfdir.patch"
+
+- name: compile-src | The patch file for pkgsysconfdir should be applied
+  when: deploy_patch_for_sysconfdir|changed
+  register: apply_patch_for_sysconfdir
+  shell: >
+    patch -p0 < ./pkgsysconfdir.patch
+  args:
+    chdir: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+
+- name: compile-src | Patch file for pkglibexecdir should be deployed
+  register: deploy_patch_for_libexecdir
+  template:
+    src:  "tmp/dovecot-pkglibexecdir.patch.j2"
+    dest: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}/pkglibexecdir.patch"
+
+- name: compile-src | The patch file for pkglibexecdir should be applied
+  when: deploy_patch_for_libexecdir|changed
+  register: apply_patch_for_libexecdir
+  shell: >
+    patch -p0 < ./pkglibexecdir.patch
+  args:
+    chdir: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+
+- name: compile-src | Linux | Dovecot should be configured
+  when: ansible_system == "Linux"
+  shell: >
+    /bin/sh configure
+    --prefix={{ dovecot.serverroot }}
+    --docdir={{ dovecot.serverroot }}/share/doc
+    --mandir={{ dovecot.serverroot }}/share/man
+    --with-ssl=openssl
+    --with-zlib
+    --with-ssldir={{ dovecot.serverroot }}/etc/ssl
+    --with-statedir={{ dovecot.serverroot }}/var/lib
+  args:
+    chdir:   "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+    creates: "Makefile"
+
+- name: compile-src | FreeBSD | Dovecot should be configured
+  when: ansible_os_family == "FreeBSD"
+  shell: >
+    CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
+    /bin/sh configure
+    --prefix={{ dovecot.serverroot }}
+    --docdir={{ dovecot.serverroot }}/share/doc
+    --mandir={{ dovecot.serverroot }}/share/man
+    --with-ssl=openssl
+    --with-zlib
+    --with-ssldir={{ dovecot.serverroot }}/etc/ssl
+    --with-statedir={{ dovecot.serverroot }}/var/lib
+  args:
+    chdir:   "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+    creates: "Makefile"
+
+- name: compile-src | REBUILD | make clean
+  when: dovecot.rebuild == True
+  shell: make clean
+  args:
+    chdir: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}/"
+
+- name: compile-src | Dovecot should be compiled
+  register: make_dovecot_binary
+  shell: make
+  args:
+    chdir:   "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+    creates: "src/master/.libs/dovecot"
+
+- name: compile-src | Dovecot files should be installed
+  when: make_dovecot_binary|changed
+  shell: >
+    make install
+  args:
+    chdir: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}"
+

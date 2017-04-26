@@ -1,0 +1,7 @@
+---
+# handlers file for ar-dovecot-src
+- name: Restart dovecot
+  service:
+    name:  "{{ dovecot.initscript }}"
+    state: "restarted"
+

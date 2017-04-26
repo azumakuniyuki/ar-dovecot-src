@@ -1,0 +1,23 @@
+galaxy_info:
+  author: azumakuniyuki
+  description: Build and install dovecot 2.2 from a source code
+  company: Cubicroot Co. Ltd.
+  issue_tracker_url: https://github.com/azumakuniyuki/ar-dovecot-src/issues
+  license: BSD
+  min_ansible_version: 2.0
+  platforms:
+  - name: FreeBSD
+    versions:
+    - all
+    - 10.0
+    - 10.1
+    - 10.2
+    - 10.3
+  - name: EL
+    versions:
+    - 5
+    - 6
+    - 7
+  galaxy_tags: ['dovecot', 'pop3', 'imap', 'mail']
+dependencies: []
+

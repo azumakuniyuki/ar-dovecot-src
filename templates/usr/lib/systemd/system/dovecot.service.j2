@@ -1,0 +1,14 @@
+[Unit]
+Description=Dovecot IMAP/POP3 email server
+After=local-fs.target network.target network-online.target
+
+[Service]
+Type=simple
+ExecStartPre={{ dovecot.serverroot }}/libexec/call-before-start
+ExecStart={{ dovecot.serverroot }}/sbin/dovecot -F
+ExecReload=/bin/kill -HUP $MAINPID
+PrivateTmp=true
+NonBlocking=yes
+
+[Install]
+WantedBy=multi-user.target
