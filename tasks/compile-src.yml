@@ -13,7 +13,7 @@
     dest: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}/pkgsysconfdir.patch"
 
 - name: compile-src | The patch file for pkgsysconfdir should be applied
-  when: deploy_patch_for_sysconfdir|changed
+  when: deploy_patch_for_sysconfdir is changed
   register: apply_patch_for_sysconfdir
   shell: >
     patch -p0 < ./pkgsysconfdir.patch
@@ -27,7 +27,7 @@
     dest: "{{ dovecot.workingdir }}/dovecot-{{ dovecot.version }}/pkglibexecdir.patch"
 
 - name: compile-src | The patch file for pkglibexecdir should be applied
-  when: deploy_patch_for_libexecdir|changed
+  when: deploy_patch_for_libexecdir is changed
   register: apply_patch_for_libexecdir
   shell: >
     patch -p0 < ./pkglibexecdir.patch
@@ -79,7 +79,7 @@
     creates: "src/master/.libs/dovecot"
 
 - name: compile-src | Dovecot files should be installed
-  when: make_dovecot_binary|changed
+  when: make_dovecot_binary is changed
   shell: >
     make install
   args:
