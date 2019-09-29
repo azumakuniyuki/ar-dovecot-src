@@ -16,7 +16,6 @@
 - name: install-pkg | RedHat | Each package for dovecot dovecot.version should be installed
   when: ansible_os_family == "RedHat"
   yum:
-    name:  "{{ item }}"
+    name:  "{{ dovecot.packages.redhat.install }}"
     state: "present"
-  with_items: "{{ dovecot.packages.redhat.install }}"
 
